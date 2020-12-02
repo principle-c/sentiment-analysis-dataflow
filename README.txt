@@ -1,4 +1,7 @@
-Run dataflow using the follow command. Update parameters as needed.
+1. Edit config.ini with settings:  nano config.ini
+2. Collect tweets to JSON:  python stream_tweets.py
+3. Upload tweets to BigQuery:  python tweets_autodb.py
+4. Run dataflow using the follow command. Update parameters as needed.
 
 """
 python beam_pipeline_pt.py \
