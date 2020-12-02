@@ -86,7 +86,7 @@ def runflow(sample_size, runner, argv=None):
         id_schema = beam_bq.TableFieldSchema()
         id_schema.name = 'tweet_id'
         id_schema.type = 'integer'
-        id_schema.mode = 'nullable'
+        id_schema.mode = 'required'
         table_schema.fields.append(id_schema)
 
         predict_schema = beam_bq.TableFieldSchema()
