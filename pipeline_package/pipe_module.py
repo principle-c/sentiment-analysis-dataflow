@@ -3,7 +3,7 @@ import time
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer, BertModel
+from transformers import BertJapaneseTokenizer, AutoModel
 import apache_beam as beam
 import pandas as pd
 
@@ -57,7 +57,7 @@ class TweetDataset(Dataset):
     def __init__(self, reviews, targets, max_len):
         self.reviews = reviews
         self.targets = targets
-        self.tokenizer = AutoTokenizer.from_pretrained('cl-tohoku/bert-base-japanese')
+        self.tokenizer = BertJapaneseTokenizer.from_pretrained('cl-tohoku/bert-base-japanese')
         self.max_len = max_len
     def __len__(self):
         return len(self.reviews)
@@ -85,7 +85,7 @@ class TweetDataset(Dataset):
 class SentimentClassifier(nn.Module):
     def __init__(self, n_classes):
         super(SentimentClassifier, self).__init__()
-        self.bert = BertModel.from_pretrained('cl-tohoku/bert-base-japanese')
+        self.bert = AutoModel.from_pretrained('cl-tohoku/bert-base-japanese')
         self.drop = nn.Dropout(p=0.5)
         self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
     def forward(self, input_ids, attention_mask):
@@ -132,7 +132,7 @@ class Predict_bert(beam.DoFn):
 
 
         model = SentimentClassifier(3)
-        model.load_state_dict(torch.load(self._destination_file_name))
+        model.load_state_dict(torch.load(self._destination_file_name, map_location=lambda storage, loc: storage))
         model.eval()
 
         self._model = model
@@ -148,11 +148,11 @@ class Predict_bert(beam.DoFn):
         ds = TweetDataset(
             reviews=df.text.to_numpy(),
             targets=df.target.to_numpy(),
-            max_len=48
+            max_len=70
         )
         inputs = {
-            'input_ids': ds[0]['input_ids'].reshape(1, 48),
-            'attention_mask': ds[0]['attention_mask'].reshape(1, 48)
+            'input_ids': ds[0]['input_ids'].reshape(1, 70),
+            'attention_mask': ds[0]['attention_mask'].reshape(1, 70)
         }
         out = self._model(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'])
         _, preds = torch.max(out, dim=1)
