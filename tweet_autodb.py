@@ -479,7 +479,7 @@ def processTweet(tweet):
     tweet = re.sub('@[^\s]+', '', tweet) # remove usernames
     tweet = re.sub('\n+', '', tweet) # remove new line
     tweet = re.sub(r'#([^\s]+)', r'\1', tweet) # remove the # in #hashtag
-    tweet = re.sub('[^\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6A]+', '', tweet) # remove japanese punctuation
+    tweet = re.sub('[^\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6AA-Za-z]+', '', tweet) # remove japanese punctuation
     tweet = tweet + emojis
     return tweet
 

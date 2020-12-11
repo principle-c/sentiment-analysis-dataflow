@@ -99,8 +99,8 @@ def runflow(sample_size, runner, argv=None):
                 pipeline
                 | 'Read from BigQuery {}'.format(sample_size_desc) >> beam.io.ReadFromBigQuery(query=source_query, use_standard_sql=True)
                 | 'predict' >> beam.ParDo(pm.Predict_bert(project=bq_project, bucket_name=model_bucket,
-                                                       model_path='py-model/model.pt',
-                                                       destination_file_name='model.pt'))
+                                                       model_path=model_path,
+                                                       destination_file_name=model_dest))
                 | "Write data to BQ" >> beam.io.WriteToBigQuery(table='tweet_predictions', dataset=dataset_name, schema=table_schema,
                                                                 project=bq_project,
                                                                 write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND)
@@ -111,4 +111,4 @@ def runflow(sample_size, runner, argv=None):
             job.wait_until_finish()
 
 if __name__=='__main__':
-    runflow(500,'DataflowRunner')
+    runflow(1000,'DataflowRunner')
